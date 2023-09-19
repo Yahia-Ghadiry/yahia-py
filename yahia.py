@@ -4,17 +4,17 @@ from json import dump, load
 
 class yahiadf:
     @staticmethod
-    def load_df(loading_function=(lambda : pd.DataFrame({})), args=tuple(), name='dataframe', formating_function=(lambda x: (x, [])), formating_args=tuple()):
-        if not os.path.isfile(f'{name}.pkl') or not os.path.isfile(f'labels{name}.json'):
+    def load_df(loading_function=(lambda : pd.DataFrame({})), args=tuple(), name='dataframe', path='./', formating_function=(lambda x: (x, [])), formating_args=tuple()):
+        if not os.path.isfile(f'{path}{name}.pkl') or not os.path.isfile(f'{path}labels_{name}.json'):
             df = loading_function(*args)
             (df, labels) = formating_function(df, *formating_args)
-            df.to_pickle(f'{name}.pkl')
-            with open(f'labels_{name}.json', 'w') as labels_json:
+            df.to_pickle(f'{path}{name}.pkl')
+            with open(f'{path}labels_{name}.json', 'w') as labels_json:
                 dump(labels, labels_json)
             print(f"Made and dumped {name}")
         else:
-            df = pd.read_pickle(f'{name}.pkl')
-            with open(f'labels{name}.json', 'r') as labels_json:
+            df = pd.read_pickle(f'{path}{name}.pkl')
+            with open(f'{path}labels{name}.json', 'r') as labels_json:
                 labels = load(labels_json)
             print(f"loaded {df}")
         
