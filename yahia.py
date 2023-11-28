@@ -85,16 +85,20 @@ class  yahiasql:
         return parased 
 
 class yahiaplot:
+    #TODO Should functiontoins be dufault asyncio? 
+    #TODO add better sizing 
+    #TODO add arabic labels support (use bidi algorithm and arabic reshaper)
+    #TODO better namolumns
+    #TODO split dataframe as column_data from series as it
     @staticmethod
-    def plot(column_data, column_name, out_of, n_columns=1, labels=[], path='./curves/'): 
-  
+    def plot(column_data, column_name, out_of, n_columns=1, labels=[], step=1, start=0, path='./curves/'): 
+        
         #column_name = column_name.capitalize() 
   
         #TODO add to make sure to maximums if multiple are the same 
   
         # Changing width and Height 
         width = out_of * 3 / 60   
-        print(width) 
         if width < 6.4 : 
             width = 6.4 
         elif width > 50:
@@ -104,28 +108,29 @@ class yahiaplot:
   
         height = 4.8 
   
-        bins = np.arange(0, out_of + 2) 
+        bins = np.arange(start, out_of + step, step)
         plot = column_data.plot.hist(bins=bins, align='left', edgecolor='black', width=1, alpha=1/n_columns, figsize=(width, height))  
                                      
-  
+        # Sizing for too big plots 
         if len(labels) != 0: 
             if out_of < 50: 
                 plot.set_xticks(range(len(labels)), labels, rotation='vertical') 
             else: 
                 plot.set_xticks(range(len(labels)), labels, rotation='vertical', size=3) 
+        #TODO have multiple means and stds when using multidataset 
         elif n_columns > 1: 
             pass 
         else: 
-            #TODO fix means for each column  
+    
   
             plot.xaxis.get_major_locator().set_params(integer=True) 
-            #TODO fix mean line make sure in right plce 
+            #TODO fix mean line make sure in right place due to using left align
             # Mean line 
             plot.axvline(x=column_data.mean(), label='Mean') 
   
             # Standard deviation 
-            plot.axvline(x=column_data.mean() + column_data.std()) 
-            plot.axvline(x=column_data.mean() - column_data.std()) 
+            plot.axvline(x=column_data.mean() + column_data.std(), linestyle='--') 
+            plot.axvline(x=column_data.mean() - column_data.std(), linestyle='--') 
   
         # Limit to edges 
         plot.set_xlim(xmin=-0.5, xmax=out_of + 0.5) 
@@ -139,7 +144,12 @@ class yahiaplot:
         plot.set_ylabel('No. of People') 
         # Save and exit
         column_name= column_name.replace("/", "_")
+        
+
         #TODO better handle path not present
+    
         plot.figure.savefig(f'{path}{column_name}.png', dpi=1000, bbox_inches='tight') 
         plt.close(plot.figure) 
+        
+        #add way to supress next print
         print(f'done {column_name}') 
