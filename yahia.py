@@ -91,7 +91,7 @@ class yahiaplot:
     #TODO better namolumns
     #TODO split dataframe as column_data from series as it
     @staticmethod
-    def plot(column_data, column_name, out_of, n_columns=1, labels=[], step=1, start=0, path='./curves/'): 
+    def plot(column_data, column_name, out_of, n_columns=1, labels=[], step=1, start=0, path='./curves/', normalize=False): 
         
         #column_name = column_name.capitalize() 
   
@@ -108,8 +108,9 @@ class yahiaplot:
   
         height = 4.8 
   
-        bins = np.arange(start, out_of + step, step)
-        plot = column_data.plot.hist(bins=bins, align='left', edgecolor='black', width=1, alpha=1/n_columns, figsize=(width, height))  
+        # For some reson step is added twice
+        bins = np.arange(start, out_of + 2 * step, step)
+        plot = column_data.plot.hist(bins=bins, align='left', edgecolor='black', width=step, alpha=1/n_columns, figsize=(width, height), density=normalize)  
                                      
         # Sizing for too big plots 
         if len(labels) != 0: 
@@ -124,7 +125,6 @@ class yahiaplot:
     
   
             plot.xaxis.get_major_locator().set_params(integer=True) 
-            #TODO fix mean line make sure in right place due to using left align
             # Mean line 
             plot.axvline(x=column_data.mean(), label='Mean') 
   
