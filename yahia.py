@@ -91,7 +91,7 @@ class yahiaplot:
     #TODO better namolumns
     #TODO split dataframe as column_data from series as it
     @staticmethod
-    def plot(column_data, column_name, out_of, n_columns=1, labels=[], step=1, start=0, path='./curves/', normalize=False): 
+    def plot(column_data, column_name, out_of, n_columns=1, labels=[], step=1, start=0, path='./curves/', normalize=False, label_rotation='vertical', show_mean=True, show_std=True): 
         
         #column_name = column_name.capitalize() 
   
@@ -114,23 +114,23 @@ class yahiaplot:
                                      
         # Sizing for too big plots 
         if len(labels) != 0: 
+            
             if out_of < 50: 
-                plot.set_xticks(range(len(labels)), labels, rotation='vertical') 
+                plot.set_xticks(range(len(labels)), labels, rotation=label_rotation) 
             else: 
-                plot.set_xticks(range(len(labels)), labels, rotation='vertical', size=3) 
+                plot.set_xticks(range(len(labels)), labels, rotation=label_rotation, size=3) 
         #TODO have multiple means and stds when using multidataset 
-        elif n_columns > 1: 
-            pass 
-        else: 
+        if n_columns == 1: 
     
   
             plot.xaxis.get_major_locator().set_params(integer=True) 
-            # Mean line 
-            plot.axvline(x=column_data.mean(), label='Mean') 
-  
-            # Standard deviation 
-            plot.axvline(x=column_data.mean() + column_data.std(), linestyle='--') 
-            plot.axvline(x=column_data.mean() - column_data.std(), linestyle='--') 
+            if show_mean:
+                #Mean line 
+                plot.axvline(x=column_data.mean(), label='Mean') 
+            if show_std:
+                # Standard deviation 
+                plot.axvline(x=column_data.mean() + column_data.std(), linestyle='--') 
+                plot.axvline(x=column_data.mean() - column_data.std(), linestyle='--') 
   
         # Limit to edges 
         plot.set_xlim(xmin=-0.5, xmax=out_of + 0.5) 
