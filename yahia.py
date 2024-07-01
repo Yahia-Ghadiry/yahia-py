@@ -85,13 +85,33 @@ class  yahiasql:
         return parased 
 
 class yahiaplot:
+
+    @staticmethod
+    def plot_line(data, name, path='./curves/'):
+        pass
+    @staticmethod
+    def plot_scatter(data, name, path='./curves/', labels=[], n_columns=1):
+        plot = data.scatter(x=data.columns[0], y=data.columns[1])
+
+
+        for i in range(1,n_columns):
+                data.scattee(x=data.columns[0], y=data.columns[1+i], ax=plot, color=plt.rcParams['axes-prop_cycle'].colors[i])
+
+
+        if len(labels) != 0: 
+            
+            plot.set_xticks(range(len(labels)), labels)
+
+        plot.figure.savefig(f'{path}{column_name}.png', dpi=1000, bbox_inches='tight') 
+        plt.close(plot.figure) 
+
     #TODO Should functiontoins be dufault asyncio? 
     #TODO add better sizing 
     #TODO add arabic labels support (use bidi algorithm and arabic reshaper)
     #TODO better namolumns
     #TODO split dataframe as column_data from series as it
     @staticmethod
-    def plot(column_data, column_name, out_of, n_columns=1, labels=[], step=1, start=0, path='./curves/', normalize=False, label_rotation='vertical', show_mean=True, show_std=True): 
+    def plot_hist(column_data, column_name, out_of, n_columns=1, labels=[], step=1, start=0, path='./curves/', normalize=False, label_rotation='vertical', show_mean=True, show_std=True, data_intger=True): 
         
         #column_name = column_name.capitalize() 
   
@@ -119,11 +139,15 @@ class yahiaplot:
                 plot.set_xticks(range(len(labels)), labels, rotation=label_rotation) 
             else: 
                 plot.set_xticks(range(len(labels)), labels, rotation=label_rotation, size=3) 
+        
+        elif data_intger:
+            plot.xaxis.get_major_locator().set_params(integer=True) 
+        plot.yaxis.get_major_locator().set_params(integer=True) 
+        
         #TODO have multiple means and stds when using multidataset 
         if n_columns == 1: 
     
-  
-            plot.xaxis.get_major_locator().set_params(integer=True) 
+              
             if show_mean:
                 #Mean line 
                 plot.axvline(x=column_data.mean(), label='Mean') 
@@ -133,7 +157,7 @@ class yahiaplot:
                 plot.axvline(x=column_data.mean() - column_data.std(), linestyle='--') 
   
         # Limit to edges 
-        plot.set_xlim(xmin=-0.5, xmax=out_of + 0.5) 
+        plot.set_xlim(xmin=start - step / 2, xmax=out_of + step / 2) 
         # Title 
         plot.set_title(f"{column_name} ({column_data.count()})") 
   
